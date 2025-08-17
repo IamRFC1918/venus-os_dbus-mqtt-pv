@@ -210,7 +210,7 @@ def on_message(client, userdata, msg):
                     else:
                         logging.error('Received JSON MQTT message does not include a power object in the pv object. Expected at least: {"pv": {"power": 0.0}}')
                         logging.debug("MQTT payload: " + str(msg.payload)[1:])
-
+                #Shelly PM devices
                 elif "apower" in jsonpayload:
                     pv_power = float(jsonpayload.get("apower", 0))
 
@@ -237,7 +237,28 @@ def on_message(client, userdata, msg):
                     pv_L3_voltage = None
                     pv_L3_frequency = None
                     pv_L3_forward = None
+                #Shelly EM devices, like Pro3em
+                elif "total_act_power" in jsonpayload:
+                    pv_power = float(jsonpayload.get("total_act_power", 0))
+                    pv_current = float(jsonpayload.get("total_current", pv_power / float(config["DEFAULT"]["voltage"])))
 
+                    pv_L1_power = float(jsonpayload.get["a_act_power"])
+                    pv_L1_current = float(jsonpayload.get["a_current"])
+                    pv_L1_voltage = float(jsonpayload.get["a_voltage"])
+                    pv_L1_frequency = float(jsonpayload.get["a_freq"])
+                    pv_L1_power_factor = float(jsonpayload.get["a_pf"])
+
+                    pv_L2_power = float(jsonpayload.get["b_act_power"])
+                    pv_L2_current = float(jsonpayload.get["b_current"])
+                    pv_L2_voltage = float(jsonpayload.get["b_voltage"])
+                    pv_L2_frequency = float(jsonpayload.get["b_freq"])
+                    pv_L2_power_factor = float(jsonpayload.get["b_pf"])
+
+                    pv_L3_power = float(jsonpayload.get["b_act_power"])
+                    pv_L3_current = float(jsonpayload.get["b_current"])
+                    pv_L3_voltage = float(jsonpayload.get["b_voltage"])
+                    pv_L3_frequency = float(jsonpayload.get["b_freq"])
+                    pv_L3_power_factor = float(jsonpayload.get["b_pf"])
                 else:
                     logging.error('Received JSON MQTT message does not include a pv object. Expected at least: {"pv": {"power": 0.0}}')
                     logging.debug("MQTT payload: " + str(msg.payload)[1:])
